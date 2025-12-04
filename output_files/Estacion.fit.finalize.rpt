@@ -1,0 +1,71 @@
+Fitter Finalize Stage Report for Estacion
+Thu Dec  4 11:40:05 2025
+Quartus Prime Version 25.1.1 Build 125 07/31/2025 SC Pro Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Fitter HSLP Summary
+  3. Finalize Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 2025  Altera Corporation. All rights reserved.
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and any partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, the Altera Quartus Prime License Agreement,
+the Altera IP License Agreement, or other applicable license
+agreement, including, without limitation, that your use is for
+the sole purpose of programming logic devices manufactured by
+Altera and sold by Altera or its authorized distributors.  Please
+refer to the Altera Software License Subscription Agreements 
+on the Quartus Prime software download page.
+
+
+
++--------------------------------------------------------------------------------+
+; Fitter HSLP Summary                                                            ;
++--------------------------------------------------------+---------------+-------+
+; Resource                                               ; Usage         ; %     ;
++--------------------------------------------------------+---------------+-------+
+;                                                        ;               ;       ;
+; Programmable power technology high-speed tiles         ; 16 / 3,531    ; < 1 % ;
+; Programmable power technology low-power tiles          ; 3,515 / 3,531 ; 100 % ;
+;     -- low-power tiles that are used by the design     ; 4 / 3,515     ; < 1 % ;
+;     -- unused tiles (low-power)                        ; 3,511 / 3,515 ; 100 % ;
+;                                                        ;               ;       ;
+; Programmable power technology high-speed LAB tiles     ; 16 / 2,642    ; < 1 % ;
+; Programmable power technology low-power LAB tiles      ; 2,626 / 2,642 ; 99 %  ;
+;     -- low-power LAB tiles that are used by the design ; 4 / 2,626     ; < 1 % ;
+;     -- unused LAB tiles (low-power)                    ; 2,622 / 2,626 ; 100 % ;
+;                                                        ;               ;       ;
++--------------------------------------------------------+---------------+-------+
+
+
++-------------------+
+; Finalize Messages ;
++-------------------+
+Info (20030): Parallel compilation is enabled and will use 14 of the 14 processors detected
+Info: *******************************************************************
+Info: Running Quartus Prime Fitter
+    Info: Version 25.1.1 Build 125 07/31/2025 SC Pro Edition
+    Info: Processing started: Thu Dec  4 11:39:03 2025
+    Info: System process ID: 21744
+Info: Command: quartus_fit --read_settings_files=on --write_settings_files=off Estacion -c Estacion
+Info: qfit2_default_script.tcl version: #1
+Info: Project  = Estacion
+Info: Revision = Estacion
+Info (22300): Design uses Placement Effort Multiplier = 1.0.
+Info (25133): Total time spent on timing analysis during Post-Routing is 0.00 seconds.
+Info (16557): Fitter post-fit operations ending: elapsed time is 00:00:07
+
+

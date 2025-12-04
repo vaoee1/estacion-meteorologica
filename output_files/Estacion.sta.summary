@@ -1,0 +1,20 @@
+------------------------------------------------------------
+Timing Analyzer Summary
+------------------------------------------------------------
+
+Type  : Setup 'CLK_IN~derived'
+Slack : -0.919
+TNS   : -41.504
+Corner: Slow 900mV 100C Model
+
+Type  : Hold 'CLK_IN~derived'
+Slack : 0.018
+TNS   : 0.000
+Corner: Fast 900mV -40C Model
+
+Type  : Minimum Pulse Width 'CLK_IN~derived'
+Slack : -0.550
+TNS   : -0.550
+Corner: Slow 900mV 100C Model
+
+------------------------------------------------------------

@@ -1,0 +1,9 @@
+Synthesis Status : Successful - Thu Dec  4 11:39:01 2025
+Revision Name : Estacion
+Top-level Entity Name : Estacion
+Family : Cyclone 10 GX
+Quartus Prime Version : 25.1.1 Build 125 07/31/2025 SC Pro Edition
+Device : 10CX220YF780I5G
+Logic utilization estimate (in ALMs) : 79 / 80,330 ( < 1 % )
+Total registers : 71
+Estimated DSP Blocks Post-Merging : 0
