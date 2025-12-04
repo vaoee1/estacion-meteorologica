@@ -78,10 +78,20 @@ ARCHITECTURE rtl OF Estacion IS
             lcd_data    : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
         );
     END COMPONENT;
+	 
+	  COMPONENT Alarm_Generator IS
+		  PORT (
+				CLK        : IN  STD_LOGIC;
+				RESET_N    : IN  STD_LOGIC;
+				TRIGGER    : IN  STD_LOGIC;
+				ALARM_PIN  : OUT STD_LOGIC
+		  );
+    END COMPONENT;
 
     -- Señales de conexión
     SIGNAL s_start_read     : STD_LOGIC := '0'; -- Señal de inicio (controlada por switch)
-    SIGNAL s_temp_raw       : STD_LOGIC_VECTOR(31 DOWNTO 0); -- Temperatura (salida del BME280_Controller)
+    SIGNAL s_read_enable_sig : STD_LOGIC := '0';
+    SIGNAL s_alarm_trigger   : STD_LOGIC := '0';
 
     -- Señales de la interfaz I2C
     SIGNAL s_i2c_ena        : STD_LOGIC;
@@ -96,12 +106,61 @@ ARCHITECTURE rtl OF Estacion IS
     -- Datos del sensor
     SIGNAL s_press_raw      : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL s_humid_raw      : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL s_temp_raw       : STD_LOGIC_VECTOR(31 DOWNTO 0); -- Temperatura (salida del BME280_Controller)
+	 
+        -- Señales temporales para el LCD Controller
+    SIGNAL s_lcd_rw          : STD_LOGIC;
+    SIGNAL s_lcd_data_8bit   : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL s_lcd_blcd        : STD_LOGIC_VECTOR(7 DOWNTO 0);
     
-    -- Umbral de Alarma (Ej: 30.00 grados Celsius) - Requiere un valor en binario compensado.
-    -- Asumiremos que el resultado compensado de la temperatura es un entero con dos decimales implícitos (e.g., 3000).
-    CONSTANT TEMP_ALARM_THRESHOLD : SIGNED(31 DOWNTO 0) := to_signed(3000, 32); 
+    -- Constantes y Temporizador
+    CONSTANT TEMP_ALARM_THRESHOLD : SIGNED(31 DOWNTO 0) := to_signed(3000, 32); -- 30.00°C * 100
+    CONSTANT C_READ_PERIOD : INTEGER := 50000000 - 1; 
+    SIGNAL s_read_timer : INTEGER RANGE 0 TO C_READ_PERIOD := 0;
 
 BEGIN
+
+    -- Conexión al BME280 Controller
+    s_start_read <= s_read_enable_sig;
+
+    -- -----------------------------------------------------------
+    -- LOGICA DE TEMPORIZACIÓN DE LECTURA (1 Hz)
+    -- -----------------------------------------------------------
+    PROCESS(CLK_IN, RST_BTN_N)
+    BEGIN
+        IF RST_BTN_N = '0' THEN
+            s_read_timer <= 0;
+            s_read_enable_sig <= '0';
+        ELSIF rising_edge(CLK_IN) THEN
+            IF START_SW = '1' THEN
+                IF s_read_timer = C_READ_PERIOD THEN
+                    s_read_timer <= 0;
+                    s_read_enable_sig <= '1';
+                ELSE
+                    s_read_timer <= s_read_timer + 1;
+                    s_read_enable_sig <= '0';
+                END IF;
+            ELSE
+                s_read_timer <= 0;
+                s_read_enable_sig <= '0';
+            END IF;
+        END IF;
+    END PROCESS;
+
+	    -- -----------------------------------------------------------
+    -- LOGICA DE DETECCIÓN DE ALARMA (Mayor a 30.00°C)
+    -- -----------------------------------------------------------
+    PROCESS(s_temp_raw)
+        VARIABLE v_temp_signed : SIGNED(31 DOWNTO 0);
+    BEGIN
+        v_temp_signed := SIGNED(s_temp_raw);
+        
+        IF v_temp_signed > TEMP_ALARM_THRESHOLD THEN
+            s_alarm_trigger <= '1'; 
+        ELSE
+            s_alarm_trigger <= '0';
+        END IF;
+    END PROCESS;
 
 	-- 1. Instancia I2C Master
 	U_I2C_MASTER : i2c_master
@@ -142,7 +201,7 @@ BEGIN
 			  humidity    => s_humid_raw
 		 );
 
-	-- 3. Instancia LCD Driver
+	-- 3. Instancia LCD controller
 	U_LCD_DRIVER : lcd_controller
 		 PORT MAP (
 			  clk         => CLK_IN,
@@ -156,4 +215,12 @@ BEGIN
 			  lcd_data    => LCD_DATA
 		 );
 		 
+	 U_ALARMA : Alarm_Generator
+        PORT MAP (
+            CLK        => CLK_IN,
+            RESET_N    => RST_BTN_N,
+            TRIGGER    => s_alarm_trigger,
+            ALARM_PIN  => ALARM_OUT
+        );
+
 END ARCHITECTURE RTL;
